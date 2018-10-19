@@ -1,5 +1,6 @@
 package cn.lihongjie;
 
+import cn.lihongjie.entity.xml.IdentityGenEntity;
 import cn.lihongjie.entity.xml.UserEntity;
 import org.apache.log4j.Logger;
 import org.hamcrest.core.Is;
@@ -117,4 +118,31 @@ public class HibernateTest {
 	}
 
 
+	/**
+	 * 交给数据库生成主键
+	 *
+	 * 支持sequence 的数据库 使用sequence
+	 *
+	 *
+	 * 使用native 自动选择
+	 *
+	 *
+	 * 可以以让用户自己录入主键
+	 * @throws Exception
+	 */
+	@Test
+	public void testIdentityIdGen() throws Exception {
+
+
+		IdentityGenEntity entity = new IdentityGenEntity();
+		session.save(entity);
+		Assert.assertThat(entity.getId(), Is.is(1L));
+		logger.info(entity);
+
+		IdentityGenEntity entity2 = new IdentityGenEntity();
+		session.save(entity2);
+		Assert.assertThat(entity2.getId(), Is.is(2L));
+		logger.info(entity2);
+
+	}
 }

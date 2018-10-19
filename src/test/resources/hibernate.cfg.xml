@@ -10,7 +10,14 @@
         <property name="connection.password">123456</property>
         <property name="show_sql">true</property>
         <property name="format_sql">true</property>
+        <!--自动表结构迁移-->
         <property name="hbm2ddl.auto">update</property>
+
+        <!--hibernate 启动 清空数据库并重建-->
+        <!--<property name="hbm2ddl.auto">create</property>-->
+        <!--hibernate 启动创建, 关闭删除-->
+        <!--<property name="hbm2ddl.auto">create-drop</property>-->
+        <!--<property name="hbm2ddl.auto">validate</property>-->
 
         <property name="dialect">org.hibernate.dialect.MySQL57Dialect</property>
         <mapping resource="cn/lihongjie/entity/xml/UserEntity.hbm.xml"/>

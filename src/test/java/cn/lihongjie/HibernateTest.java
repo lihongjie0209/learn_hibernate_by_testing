@@ -1,22 +1,33 @@
 package cn.lihongjie;
 
+import cn.lihongjie.entity.xml.UserEntity;
+import org.apache.log4j.Logger;
+import org.hamcrest.core.Is;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.hibernate.criterion.Projections;
+import org.junit.*;
+
+import javax.persistence.Query;
+
+import static org.apache.log4j.Logger.getLogger;
 
 /**
  * @author 982264618@qq.com
  */
 public class HibernateTest {
 
+	private static final Logger logger = getLogger(HibernateTest.class);
 
 	private static SessionFactory sessionFactory;
+	private Session session;
 
 	@BeforeClass
 	public static void init() {
 
+		logger.info("start test");
 		Configuration configuration = new Configuration();
 		sessionFactory = configuration.configure().buildSessionFactory();
 
@@ -24,15 +35,86 @@ public class HibernateTest {
 	}
 
 
+	@AfterClass
+	public static void destroy() {
+
+		sessionFactory.close();
+		logger.info("test finish");
+
+
+	}
+
+
+	@Before
+	public void setUp() throws Exception {
+		session = sessionFactory.openSession();
+
+		Transaction transaction = session.beginTransaction();
+		String stringQuery = "DELETE FROM UserEntity ";
+		Query query = session.createQuery(stringQuery);
+		query.executeUpdate();
+
+		transaction.commit();
+
+
+
+	}
+
+
+	@After
+	public void tearDown() throws Exception {
+		session.close();
+	}
 
 
 	@Test
-	public void testConnection() throws Exception {
+	@Ignore
+	public void testDelete() throws Exception {
 
+		UserEntity userEntity = insertTestUser();
 
-		Session session = sessionFactory.openSession();
+		Transaction transaction = session.beginTransaction();
 
-		session.close();
+		session.delete(userEntity);
+
+		transaction.commit();
+
+		assertCount(userEntity, 0);
 
 	}
+
+
+	@Test
+	public void testInsert() throws Exception {
+
+		UserEntity userEntity = insertTestUser();
+
+		assertCount(userEntity, 1L);
+
+	}
+
+	private void assertCount(UserEntity userEntity, long c) {
+		long count = (Long) session.createCriteria(session.getEntityName(userEntity))
+				.setProjection(Projections.rowCount())
+				.uniqueResult();
+
+
+		Assert.assertThat(count, Is.is(c));
+	}
+
+	private UserEntity insertTestUser() {
+		UserEntity userEntity = new UserEntity();
+		userEntity.setId(1);
+		userEntity.setName("test");
+		userEntity.setEmail("abc@123.com");
+		userEntity.setGender("1");
+
+		Transaction transaction = session.beginTransaction();
+		session.save(userEntity);
+
+		transaction.commit();
+		return userEntity;
+	}
+
+
 }

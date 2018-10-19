@@ -19,6 +19,17 @@
         <!--<property name="hbm2ddl.auto">create-drop</property>-->
         <!--<property name="hbm2ddl.auto">validate</property>-->
 
+        <!--数据库事务隔离级别-->
+        <!--
+        1. 读未提交
+        2. 读已提交
+        4. 可重复读
+        8. 串行化
+
+
+
+        -->
+        <property name="connection.isolation">4</property>
         <property name="dialect">org.hibernate.dialect.MySQL57Dialect</property>
         <mapping resource="cn/lihongjie/entity/xml/UserEntity.hbm.xml"/>
         <mapping class="cn.lihongjie.entity.xml.IdentityGenEntity"/>

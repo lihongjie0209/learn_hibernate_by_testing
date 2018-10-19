@@ -6,16 +6,16 @@ import com.google.common.base.Objects;
  * @author 982264618@qq.com
  */
 public class UserEntity {
-	private int id;
+	private long id;
 	private String name;
 	private String email;
 	private String gender;
 
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 

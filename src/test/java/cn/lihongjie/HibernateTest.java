@@ -162,4 +162,27 @@ public class HibernateTest {
 		logger.info(entity2);
 
 	}
+
+
+	/**
+	 * 同一个session中的多个查询会被缓存
+	 * 同时hibernate会保留一个关于这个对象的快照
+	 *
+	 * 事务提交时进行快照比对, 把变动的部分同步到数据库
+	 *
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void testL1Cache() throws Exception {
+
+
+		insertTestUser();
+
+		// 同一个session中的对象会被缓存
+		UserEntity u1 = session.get(UserEntity.class, 1L);
+		UserEntity u2 = session.get(UserEntity.class, 1L);
+		Assert.assertThat(u1, Is.is(u2));
+
+	}
 }

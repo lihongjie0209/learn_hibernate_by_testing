@@ -16,6 +16,24 @@ import javax.persistence.Query;
 import static org.apache.log4j.Logger.getLogger;
 
 /**
+ *
+ * hibernate对象状态管理
+ *
+ * 瞬时状态(用户new出来的, 没有ID) delete <---> insert
+ *                        insert
+ *                         |
+ *                        |
+ *                      delete
+ * session(使用session进行操作, 然后关闭session, 有ID) 对象的任何变化会更新到数据库
+ *                        close
+ *                        |
+ *                        |
+ *                        update
+ *                     游离状态
+ *
+ *
+ *
+ *
  * @author 982264618@qq.com
  */
 public class HibernateTest {
@@ -69,10 +87,10 @@ public class HibernateTest {
 
 
 	@Test
-	@Ignore
 	public void testDelete() throws Exception {
 
 		UserEntity userEntity = insertTestUser();
+		String entityName = session.getEntityName(userEntity);
 
 		Transaction transaction = session.beginTransaction();
 
@@ -80,7 +98,7 @@ public class HibernateTest {
 
 		transaction.commit();
 
-		assertCount(userEntity, 0);
+		assertCount(0, entityName);
 
 	}
 
@@ -90,12 +108,12 @@ public class HibernateTest {
 
 		UserEntity userEntity = insertTestUser();
 
-		assertCount(userEntity, 1L);
+		assertCount(1L, session.getEntityName(userEntity));
 
 	}
 
-	private void assertCount(UserEntity userEntity, long c) {
-		long count = (Long) session.createCriteria(session.getEntityName(userEntity))
+	private void assertCount(long c, String entityName) {
+		long count = (Long) session.createCriteria(entityName)
 				.setProjection(Projections.rowCount())
 				.uniqueResult();
 
@@ -105,7 +123,6 @@ public class HibernateTest {
 
 	private UserEntity insertTestUser() {
 		UserEntity userEntity = new UserEntity();
-		userEntity.setId(1);
 		userEntity.setName("test");
 		userEntity.setEmail("abc@123.com");
 		userEntity.setGender("1");

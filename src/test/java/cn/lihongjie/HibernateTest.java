@@ -14,6 +14,8 @@ import org.junit.*;
 
 import javax.persistence.Query;
 
+import java.util.List;
+
 import static org.apache.log4j.Logger.getLogger;
 import static org.hamcrest.core.Is.*;
 import static org.hamcrest.core.IsNot.*;
@@ -210,6 +212,28 @@ public class HibernateTest {
 
 		assertThat(currentSession1, not(session));
 
+
+	}
+
+
+	@Test
+	public void testHQL() throws Exception {
+
+		Transaction transaction = session.beginTransaction();
+		UserEntity userEntity = new UserEntity("test1", "aa", "1");
+		session.save(userEntity);
+
+		UserEntity userEntity2 = new UserEntity("test2", "aa", "1");
+		session.save(userEntity2);
+		transaction.commit();
+
+
+		org.hibernate.query.Query query = session.createQuery("from UserEntity ");
+
+		List<UserEntity> list = query.list();
+
+
+		assertThat(list.size(), is(2));
 
 	}
 }

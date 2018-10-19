@@ -11,6 +11,15 @@ public class UserEntity {
 	private String email;
 	private String gender;
 
+	public UserEntity(String name, String email, String gender) {
+		this.name = name;
+		this.email = email;
+		this.gender = gender;
+	}
+
+	public UserEntity() {
+	}
+
 	public long getId() {
 		return id;
 	}

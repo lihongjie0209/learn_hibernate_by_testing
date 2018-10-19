@@ -4,6 +4,7 @@ import cn.lihongjie.entity.xml.IdentityGenEntity;
 import cn.lihongjie.entity.xml.UserEntity;
 import org.apache.log4j.Logger;
 import org.hamcrest.core.Is;
+import org.hamcrest.core.IsNot;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -14,6 +15,9 @@ import org.junit.*;
 import javax.persistence.Query;
 
 import static org.apache.log4j.Logger.getLogger;
+import static org.hamcrest.core.Is.*;
+import static org.hamcrest.core.IsNot.*;
+import static org.junit.Assert.*;
 
 /**
  *
@@ -118,7 +122,7 @@ public class HibernateTest {
 				.uniqueResult();
 
 
-		Assert.assertThat(count, Is.is(c));
+		assertThat(count, is(c));
 	}
 
 	private UserEntity insertTestUser() {
@@ -153,12 +157,12 @@ public class HibernateTest {
 
 		IdentityGenEntity entity = new IdentityGenEntity();
 		session.save(entity);
-		Assert.assertThat(entity.getId(), Is.is(1L));
+		assertThat(entity.getId(), is(1L));
 		logger.info(entity);
 
 		IdentityGenEntity entity2 = new IdentityGenEntity();
 		session.save(entity2);
-		Assert.assertThat(entity2.getId(), Is.is(2L));
+		assertThat(entity2.getId(), is(2L));
 		logger.info(entity2);
 
 	}
@@ -168,7 +172,7 @@ public class HibernateTest {
 	 * 同一个session中的多个查询会被缓存
 	 * 同时hibernate会保留一个关于这个对象的快照
 	 *
-	 * 事务提交时进行快照比对, 把变动的部分同步到数据库
+	 *
 	 *
 	 *
 	 * @throws Exception
@@ -182,7 +186,30 @@ public class HibernateTest {
 		// 同一个session中的对象会被缓存
 		UserEntity u1 = session.get(UserEntity.class, 1L);
 		UserEntity u2 = session.get(UserEntity.class, 1L);
-		Assert.assertThat(u1, Is.is(u2));
+		assertThat(u1, is(u2));
+
+	}
+
+	/**
+	 *
+	 * 通过在配置文件中配置session上下文, 我们可以通过sessionFactory获得当前的session, 并且保证线程唯一
+	 *
+	 * 这个session在事务提交之后自动关闭
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void testThreadLocalSession() throws Exception {
+
+
+		Session currentSession1 = sessionFactory.getCurrentSession();
+		Session currentSession2 = sessionFactory.getCurrentSession();
+
+		assertThat(currentSession1, is(currentSession2));
+
+
+		assertThat(currentSession1, not(session));
+
 
 	}
 }

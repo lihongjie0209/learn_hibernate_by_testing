@@ -30,6 +30,9 @@
 
         -->
         <property name="connection.isolation">4</property>
+
+        <property name="current_session_context_class">thread</property>
+
         <property name="dialect">org.hibernate.dialect.MySQL57Dialect</property>
         <mapping resource="cn/lihongjie/entity/xml/UserEntity.hbm.xml"/>
         <mapping class="cn.lihongjie.entity.xml.IdentityGenEntity"/>

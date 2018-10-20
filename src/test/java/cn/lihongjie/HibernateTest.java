@@ -1,19 +1,25 @@
 package cn.lihongjie;
 
+import cn.lihongjie.entity.relation.OrganizationEntity;
 import cn.lihongjie.entity.xml.IdentityGenEntity;
 import cn.lihongjie.entity.xml.UserEntity;
 import org.apache.log4j.Logger;
 import org.hamcrest.core.Is;
 import org.hamcrest.core.IsNot;
+import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.criterion.Projections;
+import org.hibernate.loader.custom.sql.SQLQueryParser;
+import org.hibernate.query.NativeQuery;
 import org.junit.*;
 
 import javax.persistence.Query;
 
+import java.awt.image.SampleModel;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.apache.log4j.Logger.getLogger;
@@ -22,23 +28,19 @@ import static org.hamcrest.core.IsNot.*;
 import static org.junit.Assert.*;
 
 /**
- *
  * hibernate对象状态管理
- *
+ * <p>
  * 瞬时状态(用户new出来的, 没有ID) delete <---> insert
- *                        insert
- *                         |
- *                        |
- *                      delete
+ * insert
+ * |
+ * |
+ * delete
  * session(使用session进行操作, 然后关闭session, 有ID) 对象的任何变化会更新到数据库
- *                        close
- *                        |
- *                        |
- *                        update
- *                     游离状态
- *
- *
- *
+ * close
+ * |
+ * |
+ * update
+ * 游离状态
  *
  * @author 982264618@qq.com
  */
@@ -74,15 +76,33 @@ public class HibernateTest {
 	public void setUp() throws Exception {
 		session = sessionFactory.openSession();
 
+		clearAllTablesInEntity();
+
+
+	}
+
+	private void clearAllTablesInEntity() {
+
+
+		List<String> entities = Arrays.asList(
+				"cn.lihongjie.entity.xml.IdentityGenEntity",
+				"cn.lihongjie.entity.xml.UserEntity",
+
+				"cn.lihongjie.entity.relation.UserEntity",
+				"cn.lihongjie.entity.relation.OrganizationEntity"
+				);
+
+
 		Transaction transaction = session.beginTransaction();
-		String stringQuery = "DELETE FROM UserEntity ";
-		Query query = session.createQuery(stringQuery);
-		query.executeUpdate();
+
+		for (String entity : entities) {
+
+			String stringQuery = String.format("DELETE FROM %s", entity);
+			Query query = session.createQuery(stringQuery);
+			query.executeUpdate();
+		}
 
 		transaction.commit();
-
-
-
 	}
 
 
@@ -143,14 +163,15 @@ public class HibernateTest {
 
 	/**
 	 * 交给数据库生成主键
-	 *
+	 * <p>
 	 * 支持sequence 的数据库 使用sequence
-	 *
-	 *
+	 * <p>
+	 * <p>
 	 * 使用native 自动选择
-	 *
-	 *
+	 * <p>
+	 * <p>
 	 * 可以以让用户自己录入主键
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -174,9 +195,6 @@ public class HibernateTest {
 	 * 同一个session中的多个查询会被缓存
 	 * 同时hibernate会保留一个关于这个对象的快照
 	 *
-	 *
-	 *
-	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -193,9 +211,8 @@ public class HibernateTest {
 	}
 
 	/**
-	 *
 	 * 通过在配置文件中配置session上下文, 我们可以通过sessionFactory获得当前的session, 并且保证线程唯一
-	 *
+	 * <p>
 	 * 这个session在事务提交之后自动关闭
 	 *
 	 * @throws Exception
@@ -228,12 +245,109 @@ public class HibernateTest {
 		transaction.commit();
 
 
-		org.hibernate.query.Query query = session.createQuery("from UserEntity ");
+		org.hibernate.query.Query query = session.createQuery("from cn.lihongjie.entity.xml.UserEntity ");
 
 		List<UserEntity> list = query.list();
 
 
 		assertThat(list.size(), is(2));
+
+	}
+
+
+	@Test
+	public void testSQL() throws Exception {
+
+		Transaction transaction = session.beginTransaction();
+		UserEntity userEntity = new UserEntity("test1", "aa", "1");
+		session.save(userEntity);
+
+		UserEntity userEntity2 = new UserEntity("test2", "aa", "1");
+		session.save(userEntity2);
+		transaction.commit();
+
+
+		NativeQuery<UserEntity> query = session.createNativeQuery("SELECT * FROM user", UserEntity.class);
+
+		List<UserEntity> list = query.list();
+
+		assertThat(list.size(), is(2));
+
+	}
+
+
+	@Test
+	public void testOneToMany() throws Exception {
+
+		OrganizationEntity org = new OrganizationEntity();
+
+		Transaction transaction = session.beginTransaction();
+		session.save(org);
+		session.save(org.addUser());
+		session.save(org.addUser());
+		session.save(org.addUser());
+
+		transaction.commit();
+
+
+	}
+
+
+	@Test
+	public void testOneToManyCascade() throws Exception {
+
+		OrganizationEntity org = new OrganizationEntity();
+
+		org.addUser();
+		org.addUser();
+		org.addUser();
+
+		Transaction transaction = session.beginTransaction();
+		session.save(org);
+
+
+		transaction.commit();
+
+
+	}
+
+	@Test
+	public void testOneToManyCascadeDelete() throws Exception {
+
+		OrganizationEntity org = new OrganizationEntity();
+
+		org.addUser();
+		org.addUser();
+		org.addUser();
+
+		Transaction transaction = session.beginTransaction();
+		session.save(org);
+		session.delete(org);
+		transaction.commit();
+
+
+
+
+
+
+	}
+
+
+	@Test
+	public void testManyToOne() throws Exception {
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	}
 }

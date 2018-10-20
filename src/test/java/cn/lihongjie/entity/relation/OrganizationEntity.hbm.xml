@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping >
+
+
+    <class name="cn.lihongjie.entity.relation.OrganizationEntity" table="r_organization">
+        <id name="id" column="id">
+            <generator class="native"/>
+        </id>
+        <set name="users" cascade="save-update">
+            <key column="organizationId" />
+            <one-to-many class="cn.lihongjie.entity.relation.UserEntity" />
+        </set>
+
+    </class>
+</hibernate-mapping>

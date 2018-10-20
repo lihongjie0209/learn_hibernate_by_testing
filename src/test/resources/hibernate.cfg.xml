@@ -11,7 +11,7 @@
         <property name="show_sql">true</property>
         <property name="format_sql">true</property>
         <!--自动表结构迁移-->
-        <property name="hbm2ddl.auto">create-drop</property>
+        <property name="hbm2ddl.auto">update</property>
 
         <!--hibernate 启动 清空数据库并重建-->
         <!--<property name="hbm2ddl.auto">create</property>-->
@@ -37,6 +37,8 @@
         <mapping resource="cn/lihongjie/entity/xml/UserEntity.hbm.xml"/>
         <mapping class="cn.lihongjie.entity.xml.IdentityGenEntity"/>
         <mapping resource="cn/lihongjie/entity/xml/IdentityGenEntity.hbm.xml"/>
+        <mapping resource="cn/lihongjie/entity/relation/OrganizationEntity.hbm.xml"/>
+        <mapping resource="cn/lihongjie/entity/relation/UserEntity.hbm.xml"/>
 
         <!-- DB schema will be updated if needed -->
         <!-- <property name="hbm2ddl.auto">update</property> -->

@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+<class name="cn.lihongjie.entity.relation.UserEntity" table="r_user">
+    <id name="id" column="id">
+        <generator class="native"></generator>
+
+    </id>
+    <many-to-one name="organization" column="organizationId" class="cn.lihongjie.entity.relation.OrganizationEntity" />
+</class>
+</hibernate-mapping>

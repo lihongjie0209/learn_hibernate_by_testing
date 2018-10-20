@@ -9,5 +9,10 @@
 
     </id>
     <many-to-one name="organization" column="organizationId" class="cn.lihongjie.entity.relation.OrganizationEntity" />
+
+    <set name="roles" table="r_user_r_role">
+        <key column="user_id"></key>
+        <many-to-many class="cn.lihongjie.entity.relation.RoleEntity" column="role_id"  ></many-to-many>
+    </set>
 </class>
 </hibernate-mapping>

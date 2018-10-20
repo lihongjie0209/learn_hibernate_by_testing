@@ -39,6 +39,7 @@
         <mapping resource="cn/lihongjie/entity/xml/IdentityGenEntity.hbm.xml"/>
         <mapping resource="cn/lihongjie/entity/relation/OrganizationEntity.hbm.xml"/>
         <mapping resource="cn/lihongjie/entity/relation/UserEntity.hbm.xml"/>
+        <mapping resource="cn/lihongjie/entity/relation/RoleEntity.hbm.xml"/>
 
         <!-- DB schema will be updated if needed -->
         <!-- <property name="hbm2ddl.auto">update</property> -->

@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    
+    <class name="cn.lihongjie.entity.relation.RoleEntity" table="r_role">
+        <id name="id">
+            
+            <generator class="native"></generator>
+        </id>
+        
+        
+        <set name="users" table="r_user_r_role">
+            <key column="role_id"></key>
+            <many-to-many class="cn.lihongjie.entity.relation.UserEntity" column="user_id"></many-to-many>
+        </set>
+    </class>
+
+</hibernate-mapping>

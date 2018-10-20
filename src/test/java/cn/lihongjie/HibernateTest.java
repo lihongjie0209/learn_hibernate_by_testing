@@ -1,6 +1,7 @@
 package cn.lihongjie;
 
 import cn.lihongjie.entity.relation.OrganizationEntity;
+import cn.lihongjie.entity.relation.RoleEntity;
 import cn.lihongjie.entity.xml.IdentityGenEntity;
 import cn.lihongjie.entity.xml.UserEntity;
 import org.apache.log4j.Logger;
@@ -16,10 +17,12 @@ import org.hibernate.loader.custom.sql.SQLQueryParser;
 import org.hibernate.query.NativeQuery;
 import org.junit.*;
 
+import javax.management.relation.Role;
 import javax.persistence.Query;
 
 import java.awt.image.SampleModel;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import static org.apache.log4j.Logger.getLogger;
@@ -334,20 +337,21 @@ public class HibernateTest {
 
 
 	@Test
-	public void testManyToOne() throws Exception {
+	public void testManyToMany() throws Exception {
 
 
-
-
-
-
-
-
-
-
-
-
-
+		cn.lihongjie.entity.relation.UserEntity user = new cn.lihongjie.entity.relation.UserEntity();
+		RoleEntity role1 = new RoleEntity();
+		RoleEntity role2 = new RoleEntity();
+		user.setRoles(new LinkedHashSet<RoleEntity>(Arrays.asList(role1, role2)));
+		Transaction transaction = session.beginTransaction();
+		session.save(role1);
+		session.save(role2);
+		session.save(user);
+		transaction.commit();
 
 	}
+
+
+
 }
